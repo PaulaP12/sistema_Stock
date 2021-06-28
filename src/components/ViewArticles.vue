@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 	<div class="rowTitle">
-		<h3 :class="title"><span v-if="ModalAction==4">EDITAR </span> ARTÍCULOS</h3>
+		<h3>ARTÍCULOS</h3>
 		<a class="waves-effect waves-light btn btnAdd" v-if="ModalAction==1" @click="actionAdd()">Añadir Artículo</a>
 	</div>
  
@@ -168,11 +168,11 @@ export default {
       // Contenido Artículo
       dataEdit:{
         nameArticle: "",
-        priceArticle: null,
-        stockMinArticle: null,
-        stockMaxArticle: null,
+        priceArticle: 0,
+        stockMinArticle: 0,
+        stockMaxArticle: 0,
         dateExpirationArt: new Date(),
-        category_id: null,
+        category_id: 0,
       },
         date:'',
         dataPage:[],
@@ -250,12 +250,13 @@ export default {
 		
 		this.editElement(this.param,this.idArticle,this.dataEdit).then((res)=>{
 			this.articles = res;
-		})
+			this.ModalAction = 1;
+		});
 		
 		this.getInfo(this.param).then((res) => {
 			this.articles = res;
-			this.ModalAction = 1;
 		});
+		
 	},
 	
 	// Paginación
@@ -287,7 +288,6 @@ export default {
 		}else{
 			return ''
 		}
-		
 	}
   }
 }
@@ -352,5 +352,4 @@ export default {
   .yesbtn{margin: 10px 10px 0 0;}
   .btn{margin: 10px 10px 0 0;}
   .rowTitle{display:flex;align-items:center;}
-  .active{background-color: #476f7e !important}
 </style>

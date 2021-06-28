@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-		
 		<table class="highlight centered">
 			<thead>
 				<tr>
@@ -9,7 +8,7 @@
 					<th>Fecha realizado</th>
 					<th>Cantidad</th>
 					<th>Importe</th>
-			  </tr>
+				</tr>
 			</thead>
 
 			<tbody>
@@ -19,7 +18,7 @@
 					<td>{{movement.date_movement}}</td>
 					<td>{{movement.quantity_movement}}</td>
 					<td>${{movement.amount_movement}}</td>
-			  </tr>
+				</tr>
 			</tbody>
         </table>
         <ul  >
