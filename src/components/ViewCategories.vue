@@ -25,11 +25,7 @@
           </tbody>
         </table>
         
-        <ul class="pagination">
-			<li v-on:click="previousPage()"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-			<li v-for="(page,index) of totalPages()" :key="index" v-on:click="getDataPage(page)" :class="isActive(page)"><a href="#!">{{page}}</a></li>
-			<li class="waves-effect" v-on:click="nextPage()"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-		</ul>
+        <Pagination param="categories" @paginado="formatPaged"/>
       </div>
 
       <div class="col l6 form" v-if="!AccionInicial">
@@ -93,9 +89,13 @@
 
 <script>
 import ApiRest from "@/mixins/ApiRest.vue";
+import Pagination from "../components/Pagination.vue";
 
 export default {
   mixins: [ApiRest],
+  components:{
+    Pagination
+  },
   data() {
     return {
       categories: [],
@@ -117,21 +117,15 @@ export default {
       idCategory:0,
       idBD: 0,
       dataEdit:{
-		nameCategory:'',
+        nameCategory:'',
       },
       IdEdit:'',
-      
-      // Paginación
-		categoriesForPage: 5,
-		dataPaged:[],
-		pageCurrent:1
-
+      dataPaged:[] 
     };
   },
   created() {
     this.getInfo(this.param).then((res) => {
       this.categories = res;
-      this.getDataPage(1)
     });
   },
   methods:{
@@ -209,35 +203,7 @@ export default {
     },
     
     // Paginación
-	
-	totalPages(){
-		return Math.ceil(this.categories.length / this.categoriesForPage)
-	},
-	getDataPage(numberPage){
-		this.dataPaged = []
-		let inicio = (numberPage * this.categoriesForPage) - this.categoriesForPage
-		let fin = (numberPage * this.categoriesForPage)
-		this.dataPaged = this.categories.slice(inicio,fin)
-	},
-	previousPage(){
-		if(this.pageCurrent > 1){
-			this.pageCurrent--
-		}
-		this.getDataPage(this.pageCurrent)
-	},
-	nextPage(){
-		if(this.pageCurrent < this.totalPages()){
-			this.pageCurrent++
-		}
-		this.getDataPage(this.pageCurrent)
-	},
-	isActive(numberPage){
-		if(numberPage == this.pageCurrent){
-			return 'active'
-		}else{
-			return ''
-		}
-	}
+    formatPaged(info){this.dataPaged = info}
  }
 };
 </script>

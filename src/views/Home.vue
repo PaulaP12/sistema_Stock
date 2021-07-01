@@ -1,16 +1,16 @@
 <template>
   <div class="container">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Praesentium numquam quidem nobis nam ipsa, dolores natus vitae illum esse error beatae non nihil voluptas ea sed cum! Facilis, doloremque nam.</p>
+    <span>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati, maiores. Officiis eius id repellendus praesentium pariatur dolorem labore reprehenderit neque sit iste saepe nam sint, dolores nostrum amet accusamus autem.
+      Porro, commodi natus totam amet voluptatem enim at recusandae, ipsam harum asperiores tempore nesciunt ratione tempora qui? Optio at, totam laboriosam natus vel culpa fuga ipsam quo pariatur facilis ipsa!
+      Iste commodi libero, quod cupiditate dolor accusamus aperiam quidem eius natus. Assumenda amet sed incidunt dolore quod, tempora laudantium hic ab iusto earum error aliquam expedita minus maxime nisi praesentium?
+    </span>
   </div>
 </template>
 
 <script>
 
-
 export default {
   name: 'Home',
-  components: {
-    
-  }
 }
 </script>

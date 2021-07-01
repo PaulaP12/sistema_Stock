@@ -42,11 +42,7 @@
         </tbody>
       </table>
       
-	<ul class="pagination">
-		<li v-on:click="previousPage()"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-		<li v-for="(page,index) of totalPages()" :key="index" v-on:click="getDataPage(page)" :class="isActive(page)"><a href="#!">{{page}}</a></li>
-		<li class="waves-effect" v-on:click="nextPage()"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-	</ul>
+      <Pagination param="articles" @paginado="formatPaged"/>
     </div>
 
     <!-- Mostrar info de un artículo -->
@@ -141,11 +137,13 @@
 <script>
 import ApiRest from "@/mixins/ApiRest.vue";
 import ADDArticle from "../components/ADDArticle.vue";
+import Pagination from "../components/Pagination.vue";
 
 export default {
   mixins: [ApiRest],
   components:{
     ADDArticle,
+    Pagination
   },
   data() {
     return {
@@ -175,19 +173,12 @@ export default {
         category_id: 0,
       },
         date:'',
-        dataPage:[],
-        
-       // Paginación
-		articlesForPage: 5,
-		dataPaged:[],
-		pageCurrent:1
-              
+        dataPaged:[] 
     };
   },
   created() {
     this.getInfo(this.param).then((res) => {
       this.articles = res;
-      this.getDataPage(1)
     });
   },
   methods:{
@@ -242,53 +233,22 @@ export default {
       });
     },
     editArticle(){
-		this.dataEdit.category_id = this.categories.indexOf(this.dataEdit.category_id)
-		this.dataEdit.category_id = this.dataEdit.category_id + 1
+      this.dataEdit.category_id = this.categories.indexOf(this.dataEdit.category_id)
+      this.dataEdit.category_id = this.dataEdit.category_id + 1
 
-		this.dataEdit.dateExpirationArt = this.date
-		this.dataEdit.dateExpirationArt = this.dataEdit.dateExpirationArt.toString("yyyy-mm-dd");
-		
-		this.editElement(this.param,this.idArticle,this.dataEdit).then((res)=>{
-			this.articles = res;
-			this.ModalAction = 1;
-		});
-		
-		this.getInfo(this.param).then((res) => {
-			this.articles = res;
-		});
-		
-	},
-	
-	// Paginación
-	
-	totalPages(){
-		return Math.ceil(this.articles.length / this.articlesForPage)
-	},
-	getDataPage(numberPage){
-		this.dataPaged = []
-		let inicio = (numberPage * this.articlesForPage) - this.articlesForPage
-		let fin = (numberPage * this.articlesForPage)
-		this.dataPaged = this.articles.slice(inicio,fin)
-	},
-	previousPage(){
-		if(this.pageCurrent > 1){
-			this.pageCurrent--
-		}
-		this.getDataPage(this.pageCurrent)
-	},
-	nextPage(){
-		if(this.pageCurrent < this.totalPages()){
-			this.pageCurrent++
-		}
-		this.getDataPage(this.pageCurrent)
-	},
-	isActive(numberPage){
-		if(numberPage == this.pageCurrent){
-			return 'active'
-		}else{
-			return ''
-		}
-	}
+      this.dataEdit.dateExpirationArt = this.date
+      this.dataEdit.dateExpirationArt = this.dataEdit.dateExpirationArt.toString("yyyy-mm-dd");
+      
+      this.editElement(this.param,this.idArticle,this.dataEdit).then((res)=>{
+        this.articles = res;
+        this.ModalAction = 1;
+      });
+      
+      this.getInfo(this.param).then((res) => {
+        this.articles = res;
+      });
+    },
+    formatPaged(info){ this.dataPaged = info }
   }
 }
 </script>
