@@ -42,7 +42,7 @@
         </tbody>
       </table>
       
-      <Pagination param="articles" @paginado="formatPaged"/>
+      <Pagination arrayForPage="5" param="articles" @paginado="formatPaged"/>
     </div>
 
     <!-- Mostrar info de un artículo -->

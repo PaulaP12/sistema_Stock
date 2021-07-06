@@ -58,7 +58,6 @@
         created(){
 			this.getInfo(this.param).then((res) => {
 				this.lastMovements = res;
-				//console.log()
 			})
 		},
     }

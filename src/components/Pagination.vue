@@ -13,7 +13,7 @@
     
     export default {
         mixins: [ApiRest],
-        props:['param'],
+        props:['param','arrayForPage'],
         created(){
             this.getInfo(this.param).then((res) => {
                 this.array = res;
@@ -22,7 +22,6 @@
         },
         data(){
             return{
-                arrayForPage: 5,
                 dataPaged:[],
                 pageCurrent:1,
                 array:[],

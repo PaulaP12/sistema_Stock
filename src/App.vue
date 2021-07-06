@@ -13,7 +13,7 @@
           <li><router-link to="/LastMovements"><font-awesome-icon :icon="['fas','history']"/> Ultimos movimientos</router-link></li>
           <li><router-link to="/Articles"><font-awesome-icon :icon="['fas','box']"/> Artículos</router-link></li>
           <li><router-link to="/Categories"><font-awesome-icon :icon="['fas','align-justify']"/> Rubros</router-link></li>
-          <li><router-link to="/"><font-awesome-icon :icon="['fas','receipt']"/> Comprobantes</router-link></li>
+          <li><router-link to="/Receipts"><font-awesome-icon :icon="['fas','receipt']"/> Comprobantes</router-link></li>
         </ul>
       </div>
     </nav>

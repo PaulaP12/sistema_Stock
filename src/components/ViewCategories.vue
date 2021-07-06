@@ -25,7 +25,7 @@
           </tbody>
         </table>
         
-        <Pagination param="categories" @paginado="formatPaged"/>
+        <Pagination arrayForPage="5" param="categories" @paginado="formatPaged"/>
       </div>
 
       <div class="col l6 form" v-if="!AccionInicial">

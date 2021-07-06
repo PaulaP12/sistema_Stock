@@ -41,6 +41,13 @@ const routes = [
        return import('../views/Categories.vue')
     }
   },
+  {
+    path: '/receipts',
+    name: 'Receipts',
+    component: function () {
+       return import('../views/Receipts.vue')
+    }
+  },
 ]
 
 const router = new VueRouter({
