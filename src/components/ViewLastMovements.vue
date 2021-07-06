@@ -5,25 +5,24 @@
 			<a v-if="periodOfTime" @click="periodOfTime=!periodOfTime" class="waves-effect waves-light btn deep-orange">Filtrar por periodo de tiempo</a>
 
 			<div v-if="!periodOfTime">
-				<font-awesome-icon v-if="!periodOfTime" @click="filtersDate" style="margin-left:5px;" :icon="['fas', 'undo-alt']"/>
+				<a @click="filterBetweenDates()" class="waves-effect waves-light btn-small red darken-1">OK</a>
 
 				<label class="active">Inicio</label>
-				<input v-model="iniDate" type="date" class="input-date" min="2021-01-01">
+				<input v-model="startDate" type="date" class="input-date" min="2021-01-01">
 
 				<label class="active">Fin</label>
-				<input v-model="finDate" type="date" class="input-date" max="2099-09-13">
+				<input v-model="endDate" type="date" class="input-date" max="2099-09-13">
 			</div>
-			<font-awesome-icon v-if="!periodOfTime" @click="periodOfTime = true" style="margin-left:5px;" :icon="['fas', 'undo-alt']"/>
+			<font-awesome-icon v-if="!periodOfTime" @click="backFilter()" style="margin-left:20px;" :icon="['fas', 'undo-alt']"/>
 		</div>
 
-		<table class="highlight centered" v-if="periodOfTime">
+		<table class="highlight centered">
 			<thead>
 				<tr>
 					<th>#</th>
 					<th>Tipo de movimiento</th>
 					<th>Fecha realizado</th>
 					<th>Cantidad</th>
-					<th>Importe</th>
 				</tr>
 			</thead>
 
@@ -33,7 +32,6 @@
 					<td><b>{{movement.type_movement}}</b></td>
 					<td>{{movement.date_movement}}</td>
 					<td>{{movement.quantity_movement}}</td>
-					<td>${{movement.amount_movement}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -47,19 +45,32 @@
         mixins: [ApiRest],
         data(){
             return{
-                param:'lastmovements',
+                param:['lastmovements','betweenDates'],
                 lastMovements:[],
 				MovFilt:[],
                 periodOfTime:true,
-                iniDate:'',
-                finDate:'',
+                startDate: "",
+				endDate: "",
             }
         },
         created(){
-			this.getInfo(this.param).then((res) => {
+			this.getInfo(this.param[0]).then((res) => {
 				this.lastMovements = res;
 			})
 		},
+		methods:{
+			filterBetweenDates(){
+				this.dataBetweenDates(this.param[1],this.startDate,this.endDate).then((res) => {
+					this.lastMovements = res;
+				})
+			},
+			backFilter(){
+				this.periodOfTime = true
+				this.getInfo(this.param[0]).then((res) => {
+					this.lastMovements = res;
+				})
+			}
+		}
     }
 </script>
 

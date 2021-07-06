@@ -18,7 +18,7 @@ export default {
     },
     addElement(param,bodyElement){
       let Urlbase = "http://127.0.0.1:8000/api/" + param;
-      console.log(JSON.stringify(bodyElement))
+      // console.log(JSON.stringify(bodyElement))
       return fetch(Urlbase, {
         method: "POST",
         headers: {
@@ -78,7 +78,22 @@ export default {
           return response;
         })
         .catch((error) => console.log("error fetch", error));
+    },
+    dataBetweenDates(param,startDate,endDate){
+      let Urlbase = "http://127.0.0.1:8000/api/" + param + '/' +  startDate + '/' + endDate;
+      return fetch(Urlbase, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(res => res.json())
+      .then(res => {
+        let response = res;
+        return response;
+      })
+      .catch(error => console.log("error fetch", error));
     }
-  },
+  }
 };
 </script>

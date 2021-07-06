@@ -2,7 +2,19 @@
 	<div class="container">
 		<div class="rowTitle">
 			<h4 id="title">COMPROBANTES</h4>
-			<a @click="modalView = 2" class="waves-effect waves-light btn blue lighten-1">Añadir</a>
+			<a v-if="modalView == 1" @click="modalView = 4" class="waves-effect waves-light btn deep-orange">Filtrar por fecha</a>
+			<a v-if="modalView == 1" @click="modalView = 2" class="waves-effect waves-light btn blue lighten-1">Añadir</a>
+
+			<div v-if="modalView == 4">
+				<a @click="filterBetweenDates()" class="waves-effect waves-light btn-small red darken-1">OK</a>
+
+				<label class="active">Inicio</label>
+				<input v-model="startDate" type="date" class="input-date" min="2021-01-01">
+
+				<label class="active">Fin</label>
+				<input v-model="endDate" type="date" class="input-date" max="2099-09-13">
+				<font-awesome-icon v-if="modalView == 4" @click="backFilter()" style="margin-left:20px;" :icon="['fas', 'undo-alt']"/>
+			</div>
 		</div>
 
 		<div v-if="messageWarning">
@@ -33,7 +45,6 @@
 				</tbody>
 			</table>
 
-			<Pagination arrayForPage="5" param="headproofs" @paginado="formatPaged"/>
 		</div>
 
 
@@ -135,15 +146,12 @@
 
 <script>
 	import ApiRest from "@/mixins/ApiRest.vue";
-	import Pagination from "../components/Pagination.vue";
 
 	export default {
 		name: 'receipts',
 		mixins:[ApiRest],
-		components:{Pagination},
 		data(){
 			return {
-				dataPaged:[],
 				param:'headproofs',
 				receipt_headproof:[],
 				receipt_details:[],
@@ -160,6 +168,8 @@
 
 				messageWarning:false,
 				receipt_id: 0,
+				startDate: "",
+				endDate: "",
 			}
 		},
 		created(){
@@ -168,9 +178,6 @@
 			})
 		},
 		methods:{
-			// Paginación
-			formatPaged(info){this.dataPaged = info},
-
 			add(){
 				if(this.OrderedData.length<4){
 					this.OrderedData.push({nameArticle:'',cant_article:0})
@@ -223,6 +230,17 @@
 						this.messageWarning = false
 					}
 				})
+			},
+			filterBetweenDates(){
+				this.dataBetweenDates('betweenDates',this.startDate,this.endDate).then((res) => {
+					this.receipt_headproof = res;
+				})
+			},
+			backFilter(){
+				this.modalView = 1
+				this.getInfo(this.param).then((res) => {
+					this.receipt_headproof = res;
+				})
 			}
 		}
 	}
@@ -242,6 +260,8 @@
 	.backLink{margin-top: 227px;}
 	.btn-add{padding:10px;color:white;margin:0 10px;border-radius: 10%;}
 	.btn-add:hover{background-color: #00000021;}
+	.input-date{width: 130px !important;}
+	.active{margin:0 18px 0 18px;}
 
 	/* ESTILOS MODAL */
   .modal-mask {
