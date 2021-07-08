@@ -193,24 +193,22 @@
 				this.data.OrderedData = this.OrderedData
 				this.addElement(this.param,this.data).then((res) => {
 					let response = res;
-					console.log(response)
 					if (response == undefined) {
 						this.getInfo(this.param).then((res) => {
 							this.receipt_headproof = res;
 						})
 						this.modalView = 1
-						alert('COMPROBANTE AGREGADO')		
+						alert('COMPROBANTE AGREGADO')
+						location.reload();		
 					}else{
 						alert(response.Estado + ' - ' + response.Mensaje)
 					}
 				})
 			},
 			getDetailsReceipt(index){
-				console.log(index)
 				this.modalView = 3
 				this.getElementById(this.param,index).then((res) => {
 					this.receipt_details = res;
-					console.log(this.receipt_details)
 				})				
 			},
 			showModalDelete(index){ 
@@ -220,7 +218,6 @@
 			deleteReceipt(){
 				this.deleteElement(this.param,this.receipt_id).then((res) => {
 					let response = res;
-					console.log(response)
 					if (response == undefined) {
 						this.getInfo(this.param).then((res) => {
 							this.receipt_headproof = res;
@@ -257,7 +254,7 @@
 	.input-date{width:50px}
 	.validate{width: 200px;}
 	.row-product{display: flex;align-items:center;}
-	.backLink{margin-top: 227px;}
+	.backLink{margin-top: 180px;}
 	.btn-add{padding:10px;color:white;margin:0 10px;border-radius: 10%;}
 	.btn-add:hover{background-color: #00000021;}
 	.input-date{width: 130px !important;}
