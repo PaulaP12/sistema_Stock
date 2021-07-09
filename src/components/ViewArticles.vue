@@ -30,7 +30,7 @@
           <tr v-for="(article, index) in dataPaged" :key="index">
             <td>{{ article.id }}</td>
             <td><b>{{ article.nameArticle }}</b></td>
-            <td>$ {{ article.priceArticle }}</td>
+            <td>${{ formatPrice(article.priceArticle) }}</td>
             <td>{{ article.stockMinArticle }}</td>
             <td>{{ article.stockMaxArticle }}</td>
             <td>{{ article.dateExpirationArt }}</td>
@@ -53,7 +53,7 @@
             <h5 class="white-text"><b>Información del artículo</b></h5>
             <li class="white-text">ID: {{ articleSelect.id }}</li>
             <li class="white-text">ARTÍCULO: {{ articleSelect.nameArticle }}</li>
-            <li class="white-text">PRECIO: $ {{ articleSelect.priceArticle }}</li>
+            <li class="white-text">PRECIO: $ {{ formatPrice(articleSelect.priceArticle) }}</li>
             <li class="white-text">STOCK MIN: {{ articleSelect.stockMinArticle }}</li>
             <li class="white-text">STOCK MAX: {{ articleSelect.stockMaxArticle }}</li>
             <li class="white-text">FECHA VENCIMIENTO: {{ articleSelect.dateExpirationArt }}</li>
@@ -248,7 +248,11 @@ export default {
         this.articles = res;
       });
     },
-    formatPaged(info){ this.dataPaged = info }
+    formatPaged(info){ this.dataPaged = info },
+    formatPrice(value) {
+      let val = (value/1).toFixed(2).replace('.', ',')
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    }
   }
 }
 </script>
