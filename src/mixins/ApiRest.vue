@@ -1,8 +1,9 @@
 <script>
 export default {
   methods: {
-    getInfo(param) {
-      var Urlbase = "http://127.0.0.1:8000/api/" + param;
+    getInfo(param,page = 1) {
+      var Urlbase = "http://127.0.0.1:8000/api/" + param +'?page=' + page;
+
       return fetch(Urlbase, {
         method: "GET",
         headers: {
@@ -12,6 +13,7 @@ export default {
         .then((res) => res.json())
         .then((res) => {
           let response = res;
+          //console.log("RTA: ",response)
           return response;
         })
         .catch((error) => console.log("error fetch", error));

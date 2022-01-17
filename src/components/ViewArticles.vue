@@ -137,7 +137,7 @@
 <script>
 import ApiRest from "@/mixins/ApiRest.vue";
 import ADDArticle from "../components/ADDArticle.vue";
-import Pagination from "../components/Pagination.vue";
+import Pagination from "./sections/Pagination.vue";
 
 export default {
   mixins: [ApiRest],

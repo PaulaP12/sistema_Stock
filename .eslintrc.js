@@ -7,6 +7,8 @@ module.exports = {
     'plugin:vue/essential',
     'eslint:recommended'
   ],
+  "extends": ["plugin:vue/vue3-recommended"],
+  "extends": ["plugin:vue/base"],
   parserOptions: {
     ecmaVersion: 2020
   },

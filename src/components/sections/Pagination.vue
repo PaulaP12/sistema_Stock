@@ -1,5 +1,5 @@
 <template>
-    <div>
+     <div>
         <ul class="pagination">
             <li v-on:click="previousPage()"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
             <li v-for="(page,index) of totalPages()" :key="index" v-on:click="getDataPage(page)" :class="isActive(page)"><a href="#!">{{page}}</a></li>
