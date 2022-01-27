@@ -207,7 +207,7 @@
 			},
 			getDetailsReceipt(index){
 				this.modalView = 3
-				this.getElementById(this.param,index).then((res) => {
+				this.getElementByAtributte(this.param,index).then((res) => {
 					this.receipt_details = res;
 				})				
 			},

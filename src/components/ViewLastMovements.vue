@@ -38,25 +38,7 @@
 				</tbody>
 			</table>
 
-			<ul class="pagination">
-				<li v-if="pagination.current_page > 1">
-					<a class="btn-page first" @click.prevent="changePage(pagination.current_page - 1)">
-						<span>Atras</span>
-					</a>
-				</li>
-
-				<li v-for="page in pagesNumber" :class="[ page == isActived ? 'active' : '']" :key="page">
-					<a class="btn-page" @click.prevent="changePage(page)">
-						{{ page }}
-					</a>
-				</li>
-
-				<li v-if="pagination.current_page < pagination.last_page">
-					<a class="btn-page last" @click.prevent="changePage(pagination.current_page + 1)">
-						<span>Siguiente</span>
-					</a>
-				</li>
-			</ul>
+			<Pagination v-if="pagination && pagination.current_page" :pagination="pagination" @page="page"/>
 		</div>
 	</div>
 </template>
@@ -65,9 +47,13 @@
     import ApiRest from "@/mixins/ApiRest.vue";
 		import '../assets/css/global.css';
 		import '../assets/css/spinner.css';
+		import Pagination from './sections/Pagination.vue';
 
     export default {
       mixins: [ApiRest],
+			components:{
+				Pagination
+			},
       data(){
         return{
           param:['lastmovements','betweenDates'],
@@ -84,39 +70,11 @@
 						'from': 0,
 						'to': 0
 					},
-					offset:3,
 					loading:true,
         }
       },
-			created(){
+			mounted(){
 				this.viewLastmovements(1)
-			},
-			computed: {
-				isActived: function() {
-					return this.pagination.current_page;
-				},
-				pagesNumber: function() {
-					if(!this.pagination.to){
-						return [];
-					}
-
-					var from = this.pagination.current_page - this.offset; 
-					if(from < 1){
-						from = 1;
-					}
-
-					var to = from + (this.offset * 2); 
-					if(to >= this.pagination.last_page){
-						to = this.pagination.last_page;
-					}
-
-					var pagesArray = [];
-					while(from <= to){
-						pagesArray.push(from);
-						from++;
-					}
-					return pagesArray;
-				}
 			},
 			methods:{
 				viewLastmovements(page){
@@ -135,10 +93,10 @@
 					this.periodOfTime = true;
 					this.viewLastmovements(1);
 				},
-				changePage: function(page) {
-					this.pagination.current_page = page;
-					this.viewLastmovements(page);
-				}
+				page: function(page) {
+					var pageView = page;
+					this.viewLastmovements(pageView);
+				},
 			}
     }
 </script>
@@ -151,9 +109,6 @@
 	#title{flex:1 1 auto}
 	.input-date{width: 130px !important;}
 	.active{margin:0 18px 0 18px;}
-
-	#app > div > div > div > a{ background: var(--green-color); }
-	#app > div > div > div > a:hover{ background: var(--green-secondary-color); }
 
 	.btn-page{
 		cursor: pointer;

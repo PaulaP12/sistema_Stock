@@ -2,7 +2,8 @@
 export default {
   methods: {
     getInfo(param,page = 1) {
-      var Urlbase = "http://127.0.0.1:8000/api/" + param +'?page=' + page;
+      var base = "http://127.0.0.1:8000/api/";
+      var Urlbase = (param === 'inventory') ? base + param : base + param +'?page=' + page; ;
 
       return fetch(Urlbase, {
         method: "GET",
@@ -13,7 +14,6 @@ export default {
         .then((res) => res.json())
         .then((res) => {
           let response = res;
-          //console.log("RTA: ",response)
           return response;
         })
         .catch((error) => console.log("error fetch", error));
@@ -66,8 +66,8 @@ export default {
         })
         .catch((error) => console.log("error fetch", error));
     },
-    getElementById(param,id){
-      var Urlbase = "http://127.0.0.1:8000/api/" + param + '/' + id;
+    getElementByAtributte(param,attr){
+      var Urlbase = "http://127.0.0.1:8000/api/" + param + '/' + attr;
       return fetch(Urlbase, {
         method: "GET",
         headers: {

@@ -1,319 +1,356 @@
 <template>
   <div class="container">
-	<div class="rowTitle">
-		<h3>ARTÍCULOS</h3>
-		<a class="waves-effect waves-light btn btnAdd" v-if="ModalAction==1" @click="actionAdd()">Añadir Artículo</a>
-	</div>
- 
-    <ADDArticle v-if='ModalAction==2'/>
+    <div class="details">
+      <div class="cardHeader">
+          <h4>Articulos</h4>
+          <a class="waves-effect waves-light btn" @click="ADDArticle()">AÑADIR ARTÍCULO</a>
+      </div>
+      <div class="table" v-if="modal === 1">
+        <table>
+          <thead>
+              <tr>
+                <th>ID</th>
+                <th>Artículo</th>
+                <th>Precio</th>
+                <th>Stock Minimo</th>
+                <th>Stock Máximo</th>
+                <th>Fecha Vencimiento</th>
+                <th>Rubro</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(article, index) in articles" :key="index">
+              <td>{{ article.id }}</td>
+              <td><b>{{ article.nameArticle }}</b></td>
+              <td>${{ formatPrice(article.priceArticle) }}</td>
+              <td>{{ article.stockMinArticle }}</td>
+              <td>{{ article.stockMaxArticle }}</td>
+              <td>{{ article.dateExpirationArt }}</td>
+              <td>{{ article.category_id }}</td>
+              <td><font-awesome-icon @click="deleteArticle(article.id)" class='icon' icon="trash" style="color:red"/></td>
+              <td><font-awesome-icon @click="editArticle(article)" class='icon' icon="edit" style="color:blue;"/></td>
+              <td><font-awesome-icon @click="detailsArticle(article.id)" class='icon' icon="eye" style="color:gray;" /></td>
+            </tr>
+          </tbody>
+        </table>
 
-    <!--Mensaje Borrar rubro-->
-    <div v-show="viewMessageDelete == true">
-      <span class="messageError"><font-awesome-icon class="icon" :icon="['fas','trash']"></font-awesome-icon> {{messaggeAdd.Estado}} - {{messaggeAdd.Mensaje}}</span>
-    </div>
+        <Pagination v-if="pagination && pagination.current_page" :pagination="pagination" @page="page"/>
+      </div>
 
-    <div class="table-article" v-if='ModalAction == 1 | ModalAction == 5'>
-      <table class="striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Artículo</th>
-            <th>Precio</th>
-            <th>Stock Minimo</th>
-            <th>Stock Máximo</th>
-            <th>Fecha Vencimiento</th>
-            <th>Rubro</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="(article, index) in dataPaged" :key="index">
-            <td>{{ article.id }}</td>
-            <td><b>{{ article.nameArticle }}</b></td>
-            <td>${{ formatPrice(article.priceArticle) }}</td>
-            <td>{{ article.stockMinArticle }}</td>
-            <td>{{ article.stockMaxArticle }}</td>
-            <td>{{ article.dateExpirationArt }}</td>
-            <td>{{ article.category_id }}</td>
-            <td><font-awesome-icon @click="showModalDelete(article.id)" class='icon' style="color:red;" :icon="['fas', 'trash']" /></td>
-            <td><font-awesome-icon @click="articleSelected(article.id,4)" class='icon' style="color:blue;" :icon="['fas', 'edit']" /></td>
-            <td><font-awesome-icon @click="articleSelected(article.id,3)" class='icon' style="color:gray;" :icon="['fas', 'eye']" /></td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <Pagination arrayForPage="5" param="articles" @paginado="formatPaged"/>
-    </div>
-
-    <!-- Mostrar info de un artículo -->
-    <div class="center-align" v-show="ModalAction==3">
-      <div class="row">
-        <div class="col s12 m5">
-          <div class="card-panel teal">
-            <h5 class="white-text"><b>Información del artículo</b></h5>
-            <li class="white-text">ID: {{ articleSelect.id }}</li>
-            <li class="white-text">ARTÍCULO: {{ articleSelect.nameArticle }}</li>
-            <li class="white-text">PRECIO: $ {{ formatPrice(articleSelect.priceArticle) }}</li>
-            <li class="white-text">STOCK MIN: {{ articleSelect.stockMinArticle }}</li>
-            <li class="white-text">STOCK MAX: {{ articleSelect.stockMaxArticle }}</li>
-            <li class="white-text">FECHA VENCIMIENTO: {{ articleSelect.dateExpirationArt }}</li>
-            <li class="white-text">RUBRO: {{ articleSelect.category_id }}</li>
-            <div class="right-align ">
-              <a @click="returnShowModal()" class="btn-floating waves-effect waves-light red"><font-awesome-icon class='icon i-back' :icon="['fas', 'undo']"/></a>
-            </div>
+      <div class="row details" v-if="modal === 2">
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Nombre:</span>
+            <input :placeholder='filtered.nameArticle' type='text' v-model="dataCrud.nameArticle"/>
           </div>
+          <div class="input-field col s6">
+            <span class="span">Precio:</span>
+            <input type="number" :placeholder='filtered.priceArticle' v-model="dataCrud.priceArticle"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Fecha Vencimiento:</span>
+            <input :placeholder='filtered.dateExpirationArt' type='date' v-model="dataCrud.dateExpirationArt"/>
+          </div>
+          <div class="input-field col s6">
+            <span class="span">Stock Máximo:</span>
+            <input :placeholder="filtered.stockMaxArticle" type='number' v-model="dataCrud.stockMaxArticle"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Stock Mínimo:</span>
+            <input :placeholder='filtered.stockMinArticle' type='number' v-model="dataCrud.stockMinArticle"/>
+          </div>
+          <div class="input-field col s6 center-align">
+            <span class="span">Categoria:</span>
+            <Select2 :options="categories" v-model="selectedValue" @change="myChangeEvent($event)" @select="mySelectEvent($event)"/>
+          </div>
+        </div>
+        <div class="center-align">
+          <a class="waves-effect waves-light btn btn-edit" @click="save=true;editArticle()">EDITAR</a>
+        </div>
+      </div>
+
+      <div class="row details" v-if="modal === 3">
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Nombre:</span>
+            <input type='text' v-model="dataCrud.nameArticle"/>
+          </div>
+          <div class="input-field col s6">
+            <span class="span">Precio:</span>
+            <input type="number" v-model="dataCrud.priceArticle"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Fecha Vencimiento:</span>
+            <input type='date' v-model="dataCrud.dateExpirationArt"/>
+          </div>
+          <div class="input-field col s6">
+            <span class="span">Stock Máximo:</span>
+            <input type='number' v-model="dataCrud.stockMaxArticle"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <span class="span">Stock Mínimo:</span>
+            <input type='number' v-model="dataCrud.stockMinArticle"/>
+          </div>
+          <div class="input-field col s6">
+            <span class="span">Categoria:</span>
+            <Select2 :options="categories" v-model="selectedValue" @change="myChangeEvent($event)" @select="mySelectEvent($event)"/>
+          </div>
+        </div>
+        <div class="center-align">
+          <a class="waves-effect waves-light btn btn-edit" @click="save=true;ADDArticle()">AÑADIR</a>
         </div>
       </div>
     </div>
-
-    <!-- Modal eliminar -->
-    <div v-if="ModalAction == 5">
-      <transition name="modal">
-        <div class="modal-mask">
-          <div class="modal-wrapper">
-            <div class="modal-container center-align">
-
-              <div class="modal-header">
-                <slot name="header">
-                  ¿Desea borrar el rubro?
-                </slot>
-              </div>
-
-              <div class="modal-footer">
-                <slot name="footer">
-                  <a class="waves-effect waves-light btn red yesbtn" @click="deleteArticle()">SI</a>
-                  <a class="waves-effect waves-light btn grey darken-1" @click="ModalAction= ModalAction-4">NO</a>
-                </slot>
-              </div>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
-
-    <!-- Modal editar -->
-    <div v-if="ModalAction == 4">
-      <div class="row form">
-        <form class="col s12">
-          <div class="row">
-            <div class="col s6">
-              <label>Nombre Artículo</label>
-              <input v-model="dataEdit.nameArticle" type="text" class="validate" :placeholder="[articleSelect.nameArticle]">
-            </div>
-            
-            <div class="col s6">
-              <label>Precio</label>
-              <input v-model="dataEdit.priceArticle" type="number" class="validate" :placeholder="[articleSelect.priceArticle]">
-            </div>
-            
-            <div class="col s6">
-              <label>Stock Minimo</label>
-              <input v-model="dataEdit.stockMinArticle" type="number" class="validate" :placeholder="[articleSelect.stockMinArticle]">
-            </div>
-          
-            <div class="col s6">
-              <label>Stock Máximo</label>
-              <input v-model="dataEdit.stockMaxArticle" type="number" class="validate" :placeholder="[articleSelect.stockMaxArticle]">
-            </div>
-
-            <div class="col s6">
-              <label>Fecha de Vencimiento</label><br>
-              <input v-model="date" type="date" class="validate" :placeholder="[articleSelect.dateExpirationArt]">
-            </div>
-
-            <div class="col s6">
-              <v-select v-model="dataEdit.category_id" :value="dataEdit.category_id" :options="categories" label="nameCategory"></v-select>
-            </div>
-          </div> 
-            <a class="waves-effect waves-light btn lime darken-1" @click="editArticle()">Editar Artículo</a><br>
-            <br><a @click="ModalAction= ModalAction-3">No quiero editar el artículo</a>
-        </form>
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script>
 import ApiRest from "@/mixins/ApiRest.vue";
-import ADDArticle from "../components/ADDArticle.vue";
-import Pagination from "./sections/Pagination.vue";
+import Pagination from './sections/Pagination.vue';
+import '../assets/css/global.css'
+import Select2 from 'v-select2-component';
 
 export default {
   mixins: [ApiRest],
   components:{
     ADDArticle,
-    Pagination
+    Pagination,
+    Select2,
   },
   data() {
     return {
       articles: [],
+
       categories: [],
-      ModalAction:1,
-      OpenModal: false,
-      OpenModalShow: false,
-      showModal:false,
-      messaggeAdd:[],
-      viewMessageDelete:false,
-      viewMessage:false,
-      viewMessageError:false,
+      selectedValue: "",
+      filtered: [],
+      modal: 1,
+      save: false,
 
       param:'articles',
-      idArticle:0,
-      option:0,
-      articleSelect: [],
-
-      // Contenido Artículo
-      dataEdit:{
+      dataCrud:{
         nameArticle: "",
         priceArticle: 0,
         stockMinArticle: 0,
         stockMaxArticle: 0,
-        dateExpirationArt: new Date(),
+        dateExpirationArt: new Date().toISOString().slice(0, 10),
         category_id: 0,
       },
-        date:'',
-        dataPaged:[] 
+
+      // Paginado
+      pagination: {
+        'total': 0,
+        'current_page': 0,
+        'per_page': 0,
+        'last_page': 0,
+        'from': 0,
+        'to': 0
+      },
     };
   },
-  created() {
-    this.getInfo(this.param).then((res) => {
-      this.articles = res;
-    });
+  mounted() {
+    this.viewAllArticles(1);
   },
   methods:{
-    // Methods CRUD (Salvo Añadir articulo)
-    articleSelected(idArticle,option){
-
-      if(option==3){ // Selecciono el icono de mostrar info de artículo
-        this.ModalAction = 3
-
-        this.idArticle = idArticle
-        this.getElementById(this.param,this.idArticle).then((res)=>{
-          this.articleSelect = res;
-        })
-      }else if (option == 4) {// Selecciono el icono de editar artículo
-        this.ModalAction = 4
-        
-        this.idArticle = idArticle
-        this.getElementById(this.param,this.idArticle).then((res)=>{
-			this.articleSelect = res;
-        });
-        this.getInfo("categories").then((res) => {
-          this.categories = res;
-        })
-      }
-    },    
-    returnShowModal(){
-      this.ModalAction=1
+    viewAllArticles(page){
+      this.getInfo(this.param,page).then((res) => {
+        this.articles = res.articles.data;
+        this.pagination = res.pagination;
+      });
     },
-    // Añadir artículo
-    actionAdd(){
-      this.ModalAction = 2
-    },
-    showModalDelete(id){ 
-      this.idArticle = id 
-      this.ModalAction = 5
-    },
-    deleteArticle(){
-      this.deleteElement(this.param,this.idArticle).then((res) => {
-        this.showModal = false
-
-        if(res.Estado == 'Satisfactorio'){
-          this.messaggeAdd = res
-          this.viewMessageDelete = true
-          setTimeout(() => this.viewMessageDelete = false, 5000);
-          this.viewMessage = false
+    deleteArticle(id){
+      Swal.fire({
+        title: '¿Estás seguro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#1e212d',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, seguro.'
+      }).then((result) => {
+        if (result.value) {
+          if (result.isConfirmed) {
+            this.deleteElement(this.param,id).then((res) => {
+              console.log("Rta:",res)
+              if (res.Estado == 'Satisfactorio') {
+                Swal.fire(
+                  'Borrado!',
+                  '-' + res.Mensaje + '-'
+                )
+              }else {
+                Swal.fire("Cancelado", "Error" + re);
+              }
+            });
+          }
         }
-      });
+      })
 
-      this.getInfo(this.param).then((res) => {
-        this.articles = res;
-        this.ModalAction = 1;
-      });
+      this.viewAllArticles(1);
     },
-    editArticle(){
-      this.dataEdit.category_id = this.categories.indexOf(this.dataEdit.category_id)
-      this.dataEdit.category_id = this.dataEdit.category_id + 1
+    detailsArticle(id){
+      const filtered = this.articles.filter(a => { return a.id === id });
+      Swal.fire({
+        title: '<strong> Detalle del artículo</strong>',
+        html:
+          `<h5><b> ${filtered[0].nameArticle} </b></h5>` +
+          `<p> Precio: <i>$ ${filtered[0].priceArticle} </i> </p> ` +
+          `<p> Stock minimo: <b> ${filtered[0].stockMaxArticle} </b> </p> ` +
+          `Fecha de expiración: <b> ${filtered[0].dateExpirationArt} </b>`,
+        showCloseButton: true,
+        confirmButtonText:
+          '<i class="fa fa-thumbs-up"></i> Ok'
+      })
+    },
+    editArticle(article){
+      if (!this.save) {
+        this.filtered = article;
+        this.modal = 2
 
-      this.dataEdit.dateExpirationArt = this.date
-      this.dataEdit.dateExpirationArt = this.dataEdit.dateExpirationArt.toString("yyyy-mm-dd");
-      
-      this.editElement(this.param,this.idArticle,this.dataEdit).then((res)=>{
-        this.articles = res;
-        this.ModalAction = 1;
-      });
-      
-      this.getInfo(this.param).then((res) => {
-        this.articles = res;
-      });
+        var self = this;
+        this.getInfo("categoriesAll").then(function (response) {
+          self.categories = response.map(x => {return x.nameCategory});
+        })
+      }else{
+        this.editElement(this.param,this.filtered.id,this.dataCrud).then((res)=>{
+          Swal.fire({
+              icon: 'success',
+              html: "Se ha editado con éxito",
+          })
+        });
+        this.modal = 1;
+      }
     },
-    formatPaged(info){ this.dataPaged = info },
+    ADDArticle(){
+      if (!this.save) {
+        this.modal = 3
+
+        var self = this;
+        this.getInfo("categoriesAll").then(function (response) {
+          self.categories = response.map(x => {return x.nameCategory});
+        })
+      }else{
+        this.addElement('articles', this.dataCrud).then((res)=>{
+          if (res != null) {
+            Swal.fire({
+                icon: 'success',
+                html: "Se ha agregado con éxito",
+            })
+            setTimeout(() => {
+              this.modal = 1;
+              this.$router.go('articles')
+            }, 3000);
+          }
+        })
+
+      }
+    },
+    // Metodos exentos al CRUD
+    page: function(page) {
+      var pageView = page;
+      this.viewAllArticles(pageView);
+    },
     formatPrice(value) {
       let val = (value/1).toFixed(2).replace('.', ',')
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    mySelectEvent(){
+      var self = this;
+      this.getElementByAtributte("categoriaIdByName",this.selectedValue).then((res) => {
+        self.dataCrud.category_id = res;
+        console.log(res);
+      })
+    },
+    myChangeEvent(){
+      console.log("Cambiado")
+      var self = this;
+      this.getElementByAtributte("categoriaIdByName",this.selectedValue).then((res) => {
+        self.dataCrud.category_id = res;
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-  .messageError{
-    padding:10px;
-    color:#ffffff;
-    background-color: #b83e35;
-    font-size: 14px;
-  }
-  h3{text-align: center;flex:1;}
-  .btn {background-color: #476f7e;}
-  .btn:hover {background-color: #2a4752;}
-
-  /* ESTILOS MODAL */
-  .modal-mask {
-    position: fixed;
-    z-index: 9998;
-    top: 0;
-    left: 0;
+  .details{
+    position: relative;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: table;
-    transition: opacity 0.3s ease;
+    padding: 20px;
+    padding-top: 0;
   }
 
-  .modal-wrapper { display: table-cell; vertical-align: middle;}
-
-  .modal-container {
-    width: 300px;
-    height: 120px;
-    margin: 0px auto;
-    padding: 20px 30px;
-    background-color: #fff;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-    transition: all 0.3s ease;
-    font-family: Helvetica, Arial, sans-serif;
+  .details .table {
+    position:relative;
+    display: grid;
+    min-height: 450px;
+    background-color: var(--boxes-color);
+    padding:20px;
   }
 
-  .modal-header h3 {margin: 10px;color: #42b983;}
-
-  .modal-enter {opacity: 0}
-
-  .modal-leave-active {opacity: 0;}
-
-  .modal-enter .modal-container,.modal-leave-active .modal-container {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
+  .cardHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .container{text-align: center;margin-top:10px;}
-  .icon{cursor:pointer;margin-right:10px;}
-  .i-back{margin-right: 12px;}
-  .white-text{text-decoration: none;text-align: left;}
-  .card-panel{padding-left: 50px;}
-  .teal{background-color: #222d31 !important;}
-  .row .col.m5{margin-left: 280px;}
-  .yesbtn{margin: 10px 10px 0 0;}
-  .btn{margin: 10px 10px 0 0;}
-  .rowTitle{display:flex;align-items:center;}
+  .cardHeader h4 { font-weight: 400; padding-left: 15px; }
+
+  .details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .details table thead td{ font-weight: 600; }
+
+  .details .table table tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .details .table table tbody tr:last-child{ border-bottom: none; }
+
+  td,th { border-radius: 0; }
+
+  .table > table > thead > tr > th:nth-child(3),
+  .details .table table tbody tr td:nth-child(3){
+    text-align: right;
+    padding-right: 20px;
+  }
+
+  .table > table > thead > tr > th:nth-child(4),
+  .details .table table tbody tr td:nth-child(4){
+    text-align: right;
+    padding-right: 20px;
+  }
+
+  .btn {
+    position:relative;
+    background: var(--green-color);
+    text-decoration: none;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #FFF;
+  }
+
+  .btn:hover{ background:var(--green-secondary-color); }
+
+  .router{
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .icon{ margin: 0 5px}
+
+  .v-select .dropdown-menu {
+    display: block;
+  }
+
+  .btn-edit{ background: var(--secondary-bg-color); }
 </style>

@@ -16,10 +16,10 @@
             <div class="recentOrders">
                 <div class="cardHeader">
                     <h4>Últimos pedidos</h4>
-                    <a class="btn"><router-link class="router" to="/">Ver todos</router-link></a>
+                    <a class="btn"><router-link class="router" to="/Receipts">Ver todos</router-link></a>
                 </div>
-                <div class="container-spinner">
-                    <div v-if="loading" class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div v-if="loading" class="container-spinner">
+                    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 </div>
                 <transition name="fade">
                     <table v-if="!loading">
@@ -33,7 +33,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr :class="{littleStockClass: inv.littleStock}" v-for="(inv,i) in filterCategories" :key="i">
+                            <tr :class="{littleStockClass: inv.littleStock}" v-for="(inv,i) in inventory" :key="i">
                                 <td><div title="Hay menos cantidad que el stock mínimo.">{{inv.nameArticle}}</div></td>
                                 <td>{{inv.cantForArticle}}</td>
                                 <td>${{formatPrice(inv.priceArticle)}}</td>
@@ -46,7 +46,7 @@
             </div>
             <div class="filters">
                 <div class="cardFilters">
-                    <h4>Filtrar por:</h4>
+                    <h4>Filtrar por:</h4><b>No funca</b>
                     <div class="input-field">
                         <input placeholder="Rubro" type="text" class="validate" v-model="filter">
                     </div>
@@ -59,6 +59,7 @@
 <script>
     import ApiRest from "@/mixins/ApiRest.vue";
     import '../assets/css/spinner.css';
+    import '../assets/css/global.css'
 
     export default {
         mixins: [ApiRest],
@@ -68,7 +69,6 @@
                 inventory:[],
                 filter:'',
                 littleStock:false,
-                articles:[],
                 sections:[
                     { id:1, title: 'Articulos', url:'/Articles', icon:"box", amount:0},
                     { id:2, title: 'Rubros', url:'/Categories', icon: "tag", amount:0 },
@@ -78,19 +78,15 @@
             }
         },
         created(){
-            this.getInfo("articles").then((res) => { this.sections[0].amount = res.length; });
-            this.getInfo("categories").then((res) => { this.sections[1].amount = res.length; });
             this.getInfo(this.param).then((res) => {
-                this.inventory = res;
+                this.sections[0].amount = res.total_articles;
+                this.sections[1].amount = res.total_categories;
+                this.sections[2].amount = res.total_articles;
+                for (let i = 0; i < 5; i++) {
+                    this.inventory[i] = res[i];
+                }
                 this.loading = false;
             });
-        },
-        computed:{
-            filterCategories(){
-                return this.inventory.filter(row => {
-                    return row.nameCategory.match(this.filter)
-                })
-            }
         },
         methods:{
             formatPrice(value) {
@@ -103,8 +99,8 @@
 
 <style scoped>
     .router{
-        text-decoration: none; 
-        color: inherit;
+			text-decoration: none; 
+			color: inherit;
     }
 
     .container{

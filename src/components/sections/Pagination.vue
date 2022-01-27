@@ -1,62 +1,70 @@
 <template>
-     <div>
-        <ul class="pagination">
-            <li v-on:click="previousPage()"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-            <li v-for="(page,index) of totalPages()" :key="index" v-on:click="getDataPage(page)" :class="isActive(page)"><a href="#!">{{page}}</a></li>
-            <li class="waves-effect" v-on:click="nextPage()"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-        </ul>
-    </div>
+  <ul class="pagination">
+		{{ }}
+		<li v-if="pagination.current_page > 1">
+			<a class="btn-page first" @click.prevent="changePage(pagination.current_page - 1)">
+		    	<span>Atras</span>
+	    	</a>
+		</li>
+
+		<li v-for="page in pagesNumber" :class="[ page == isActived ? 'active' : '']" :key="page">
+			<a class="btn-page" @click.prevent="changePage(page)"> {{ page }} </a>
+		</li>
+
+		<li v-if="pagination.current_page < pagination.last_page">
+			<a class="btn-page last" @click.prevent="changePage(pagination.current_page + 1)">
+				<span>Siguiente</span>
+			</a>
+		</li>
+	</ul>
 </template>
 
 <script>
-    import ApiRest from "@/mixins/ApiRest.vue";
-    
     export default {
-        mixins: [ApiRest],
-        props:['param','arrayForPage'],
-        created(){
-            this.getInfo(this.param).then((res) => {
-                this.array = res;
-                this.getDataPage(1)
-            });
-        },
+        props:['pagination'],
         data(){
             return{
-                dataPaged:[],
-                pageCurrent:1,
-                array:[],
+							offset:3,
             }
         },
+				computed: {
+					isActived: function() {
+						return this.pagination.current_page;
+					},
+					pagesNumber: function() {
+						if(!this.pagination.to){
+							return [];
+						}
+
+						var from = this.pagination.current_page - this.offset; 
+						if(from < 1){
+							from = 1;
+						}
+
+						var to = from + (this.offset * 2); 
+						if(to >= this.pagination.last_page){
+							to = this.pagination.last_page;
+						}
+
+						var pagesArray = [];
+						while(from <= to){
+							pagesArray.push(from);
+							from++;
+						}
+						return pagesArray;
+					}
+				},
         methods:{
-            totalPages(){
-                return Math.ceil(this.array.length / this.arrayForPage)
-            },
-            getDataPage(numberPage){
-                this.dataPaged = []
-                let inicio = (numberPage * this.arrayForPage) - this.arrayForPage
-                let fin = (numberPage * this.arrayForPage)
-                this.dataPaged = this.array.slice(inicio,fin)
-                this.$emit('paginado',this.dataPaged)
-            },
-            previousPage(){
-                if(this.pageCurrent > 1){
-                    this.pageCurrent--
-                }
-                this.getDataPage(this.pageCurrent)
-            },
-            nextPage(){
-                if(this.pageCurrent < this.totalPages()){
-                    this.pageCurrent++
-                }
-                this.getDataPage(this.pageCurrent)
-            },
-            isActive(numberPage){
-                if(numberPage == this.pageCurrent){
-                    return 'active'
-                }else{
-                    return ''
-                }
-            }
+					changePage: function(page) {
+						this.pagination.current_page = page;
+						this.$emit('page', page)
+					},
         }
     }
 </script>
+
+<style scoped>
+	#app > div > div > div > a{ background: var(--green-color); }
+	#app > div > div > div > a:hover{ background: var(--green-secondary-color); }
+	.pagination li.active { background: var(--secondary-bg-color); }
+</style>

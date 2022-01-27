@@ -12,12 +12,10 @@ library.add(fas)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
-import vSelect from 'vue-select'
-import 'vue-select/dist/vue-select.css';
-Vue.component('v-select', vSelect)
+import swal from 'sweetalert2'
+window.Swal = swal;
 
 Vue.config.productionTip = false
-
 
 new Vue({
   router,
