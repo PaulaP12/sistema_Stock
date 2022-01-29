@@ -121,7 +121,6 @@ import Select2 from 'v-select2-component';
 export default {
   mixins: [ApiRest],
   components:{
-    ADDArticle,
     Pagination,
     Select2,
   },
